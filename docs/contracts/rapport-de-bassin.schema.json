@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://orca.example/schemas/rapport-de-bassin/1",
+  "title": "Rapport de bassin",
+  "description": "Document publié par le contrôleur d'un bassin toutes les 5 minutes (temps simulé) sur orca/{site}/{tank}/report. Objet-frontière entre l'autorégulation (D2) et la surveillance (D3).",
+  "type": "object",
+  "required": ["schema_version", "identity", "window", "aggregates", "state", "diagnostics", "local_model", "commands"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "identity": {
+      "type": "object",
+      "required": ["site", "tank", "config_version"],
+      "properties": {
+        "site": { "type": "string" },
+        "tank": { "type": "string" },
+        "config_version": { "type": "integer", "description": "Version de configuration appliquée par le contrôleur" }
+      }
+    },
+    "window": {
+      "type": "object",
+      "required": ["start", "end", "clock_synced"],
+      "properties": {
+        "start": { "type": "string", "format": "date-time" },
+        "end": { "type": "string", "format": "date-time" },
+        "clock_synced": { "type": "boolean" }
+      }
+    },
+    "aggregates": {
+      "type": "object",
+      "description": "Un agrégat par grandeur (clé : temperature_c, ph, o2_mg_l, salinity_ppt, nh3_mg_l, flow_l_min, power_w, reagent_pct)",
+      "additionalProperties": { "$ref": "#/$defs/aggregate" }
+    },
+    "state": {
+      "type": "object",
+      "required": ["level", "degraded"],
+      "properties": {
+        "level": { "enum": ["NOMINAL", "SURVEILLANCE", "ALERTE", "CRITIQUE"] },
+        "degraded": { "type": "boolean", "description": "Couverture de surveillance réduite (EX-A08)" },
+        "mode": { "enum": ["AUTO", "MANUEL"] }
+      }
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["device", "status"],
+        "properties": {
+          "device": { "type": "string", "description": "S01…S19, A01…A06" },
+          "status": { "enum": ["OK", "SUSPECT", "DEFAILLANT", "MAINTENANCE"] },
+          "detail": { "type": "string" }
+        }
+      }
+    },
+    "local_model": {
+      "type": "object",
+      "description": "Écart entre mesure et prédiction du modèle local (P6b), par grandeur modélisée",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["residual", "sigma"],
+        "properties": {
+          "residual": { "type": "number" },
+          "sigma": { "type": "number" }
+        }
+      }
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "actuator", "result", "at"],
+        "properties": {
+          "id": { "type": "string" },
+          "actuator": { "type": "string" },
+          "origin": { "enum": ["REGULATION", "OPERATEUR"] },
+          "result": { "enum": ["accepted", "clipped", "refused"] },
+          "reason": { "type": "string" },
+          "at": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "aggregate": {
+      "type": "object",
+      "required": ["mean", "min", "max", "std", "n_valid", "n_rejected", "quality"],
+      "properties": {
+        "mean": { "type": ["number", "null"] },
+        "min": { "type": ["number", "null"] },
+        "max": { "type": ["number", "null"] },
+        "std": { "type": ["number", "null"] },
+        "n_valid": { "type": "integer" },
+        "n_rejected": { "type": "integer" },
+        "quality": { "enum": ["VALIDE", "SUSPECTE", "INTERPOLEE", "INVALIDE"] },
+        "reason": { "type": "string", "description": "Motif de la qualité (règle P7 appliquée)" }
+      }
+    }
+  }
+}
