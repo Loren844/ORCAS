@@ -10,6 +10,7 @@ pub enum Conversion {
     /// `raw / diviseur` (ex. 0,01 °C → °C : diviseur 100).
     Scale(f64),
     /// Dixièmes de degré Fahrenheit vers °C : `(raw / 10 − 32) × 5/9`.
+    #[allow(dead_code, reason = "utilisée par S02, pas encore interrogé")]
     DeciFahrenheitToCelsius,
 }
 
