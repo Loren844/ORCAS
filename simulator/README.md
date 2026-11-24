@@ -4,9 +4,8 @@ Joue le rôle du monde physique : l'eau de chaque bassin (modèle du premier ord
 ses actionneurs, exposés en Modbus TCP comme du vrai matériel. Il porte aussi l'horloge simulée et
 l'API d'incidents utilisée par la console de démo.
 
-Langage : Python. Voir le [périmètre](../docs/PERIMETRE-POC.md#simulateur), la
-[carte Modbus](../docs/contracts/modbus-map.md) et
-l'[ADR-0001](../docs/adr/0001-capteurs-actionneurs-simules-en-modbus-tcp.md).
+Langage : Python. Voir le [périmètre](../docs/PERIMETRE-POC.md#simulateur) et la
+[carte Modbus](../docs/contracts/modbus-map.md).
 
 ## État (v0)
 
